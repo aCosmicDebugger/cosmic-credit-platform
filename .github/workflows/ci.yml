@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Instalar Python 3.11
+        run: uv python install 3.11
+
+      - name: Instalar o projeto
+        run: uv sync --locked
+
+      - name: Verificar código com Ruff
+        run: uv run --locked ruff check .
+
+      - name: Executar testes
+        run: uv run --locked pytest
