@@ -1,0 +1,17 @@
+[project]
+name = "cosmic-credit-platform"
+version = "0.1.0"
+description = "Explainable end-to-end credit risk modeling and monitoring platform."
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = []
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cosmic_credit"]
