@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "source_schema": "freddie_mac_july_2026",
+  "source_zip": "data/raw/freddie_mac/historical_data_2018Q1.zip",
+  "quarter": "2018Q1",
+  "window": "first payment month through first payment month + 11",
+  "n_loans": 296816,
+  "checks": {
+    "performance_records": 14285575,
+    "records_in_window": 3435345,
+    "termination_code_records_all_periods": 229500
+  },
+  "status_records_in_window": {
+    "00": 3417066,
+    "01": 14405,
+    "02": 1992,
+    "03": 741,
+    "04": 385,
+    "05": 267,
+    "06": 174,
+    "07": 115,
+    "08": 73,
+    "09": 54,
+    "10": 29,
+    "11": 13,
+    "12": 4,
+    "RA": 27
+  },
+  "termination_code_records_reported_in_window": {
+    "01": 13956,
+    "02": 2,
+    "03": 2,
+    "09": 1,
+    "96": 422
+  },
+  "termination_code_records_effective_in_window": {
+    "01": 13956,
+    "02": 2,
+    "03": 2,
+    "09": 1,
+    "96": 422
+  },
+  "loans_by_observed_months": {
+    "0": 1357,
+    "1": 1536,
+    "2": 2162,
+    "3": 881,
+    "4": 1317,
+    "5": 1917,
+    "6": 1829,
+    "7": 1250,
+    "8": 1307,
+    "9": 1342,
+    "10": 2225,
+    "11": 8835,
+    "12": 270858
+  },
+  "loan_counts_by_joint_diagnostics": {
+    "complete_rows=False;complete_numeric_status=False;numeric_90plus=False;reo=False;unknown_status=False;termination_in_window=False": 13595,
+    "complete_rows=False;complete_numeric_status=False;numeric_90plus=False;reo=False;unknown_status=False;termination_in_window=True": 12296,
+    "complete_rows=False;complete_numeric_status=False;numeric_90plus=True;reo=False;unknown_status=False;termination_in_window=False": 14,
+    "complete_rows=False;complete_numeric_status=False;numeric_90plus=True;reo=False;unknown_status=False;termination_in_window=True": 53,
+    "complete_rows=True;complete_numeric_status=False;numeric_90plus=True;reo=True;unknown_status=False;termination_in_window=False": 9,
+    "complete_rows=True;complete_numeric_status=False;numeric_90plus=True;reo=True;unknown_status=False;termination_in_window=True": 1,
+    "complete_rows=True;complete_numeric_status=True;numeric_90plus=False;reo=False;unknown_status=False;termination_in_window=False": 268307,
+    "complete_rows=True;complete_numeric_status=True;numeric_90plus=False;reo=False;unknown_status=False;termination_in_window=True": 2018,
+    "complete_rows=True;complete_numeric_status=True;numeric_90plus=True;reo=False;unknown_status=False;termination_in_window=False": 508,
+    "complete_rows=True;complete_numeric_status=True;numeric_90plus=True;reo=False;unknown_status=False;termination_in_window=True": 15
+  },
+  "definitions": {
+    "numeric_90plus": "numeric delinquency status from 03 through 99",
+    "reo": "RA recorded separately; no final target rule applied",
+    "unknown_status": "any nonnumeric status other than RA",
+    "termination_in_window": "nonempty zero balance code with effective date in window; does not imply voluntary payoff"
+  },
+  "limitations": "Diagnostic only. No final target or eligibility label. Effective termination dates may be disclosed after the window; historical label availability is not established."
+}

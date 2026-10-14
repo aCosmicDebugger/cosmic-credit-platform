@@ -99,6 +99,7 @@ def main():
     monthly_records = Counter()
     age_offsets = Counter()
     first_observation_offsets = Counter()
+    age_alignment_by_modification = {}
 
     for number, record in enumerate(
         iter_records(
@@ -143,16 +144,25 @@ def main():
         if age < 0:
             counts["negative_loan_age_records"] += 1
 
-        # Diagnostic hypothesis, not a cleaning rule.
         expected_age = offset + 1
         age_offsets[str(age - expected_age)] += 1
+        flag = record["modification_flag"] or "(blank)"
+        alignment = age_alignment_by_modification.setdefault(
+            flag, {"matching": 0, "different": 0}
+            )
+        alignment["matching" if age == expected_age else "different"] += 1
 
     gap_counts = Counter()
+    coverage_12m = Counter()
+    gap_examples = []
+    early_examples = []
+    late_examples = []
+
     no_performance = 0
     min_period = None
     max_period = None
 
-    for history in loans.values():
+    for loan_id, history in loans.items():
         if history.first_period is None:
             no_performance += 1
             continue
@@ -162,13 +172,59 @@ def main():
         observed = history.months_mask.bit_count()
         internal_missing = last - first + 1 - observed
 
+        first_payment = history.first_payment
+        observed_offsets = {
+            index
+            for index in range(12)
+            if first_payment + index >= first
+            and (
+                history.months_mask
+                & (1 << (first_payment + index - first))
+            )
+        }
+        coverage_12m[str(len(observed_offsets))] += 1
+
+        if internal_missing and len(gap_examples) < 5:
+            missing_periods = [
+                month_label(first + offset)
+                for offset in range(last - first + 1)
+                if not (history.months_mask & (1 << offset))
+            ]
+            gap_examples.append(
+                {
+                    "loan_id": loan_id,
+                    "first_period": month_label(first),
+                    "last_period": month_label(last),
+                    "missing_periods": missing_periods,
+                }
+            )
+
+        example = {
+            "loan_id": loan_id,
+            "first_payment_date": month_label(first_payment),
+            "first_observed_period": month_label(first),
+            "first_observation_offset": first - first_payment,
+            "observed_months_in_first_12": len(observed_offsets),
+        }
+
+        if first - first_payment < -1 and len(early_examples) < 5:
+            early_examples.append(example)
+
+        if first > first_payment and len(late_examples) < 5:
+            late_examples.append(example)
+
         gap_counts[str(internal_missing)] += 1
-        first_observation_offsets[
-            str(first - history.first_payment)
-        ] += 1
+        first_observation_offsets[str(first - first_payment)] += 1
 
         min_period = first if min_period is None else min(min_period, first)
         max_period = last if max_period is None else max(max_period, last)
+
+    expected_count = len(loans) - no_performance
+    if sum(coverage_12m.values()) != expected_count:
+        raise ValueError("Coverage counts do not reconcile with loan count")
+
+    if any(not 0 <= int(months) <= 12 for months in coverage_12m):
+        raise ValueError("Observed coverage must be between 0 and 12 months")
 
     check_names = [
         "performance_records",
@@ -224,6 +280,15 @@ def main():
             "Age alignment is diagnostic, not a rejection rule. "
             "No target, maturity or termination classification is produced."
         ),
+        "age_alignment_by_modification_flag": age_alignment_by_modification,
+        "loans_by_observed_months_in_first_12": dict(
+            sorted(coverage_12m.items(), key=lambda item: int(item[0]))
+        ),
+        "diagnostic_examples": {
+            "internal_gaps": gap_examples,
+            "starts_before_previous_month": early_examples,
+            "late_starts": late_examples,
+            },
     }
 
     args.report.parent.mkdir(parents=True, exist_ok=True)
@@ -232,7 +297,6 @@ def main():
         encoding="utf-8",
     )
 
-    # Keep the terminal output compact.
     terminal_report = {
         key: value
         for key, value in report.items()
