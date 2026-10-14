@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source_schema": "freddie_mac_july_2026",
+  "source_zip": "data/raw/freddie_mac/historical_data_2018Q1.zip",
+  "quarter": "2018Q1",
+  "origination_records": 296816,
+  "performance_records": 14285575,
+  "checks": {
+    "origination_distinct_nonempty_ids": 296816,
+    "origination_empty_id_records": 0,
+    "origination_duplicate_nonempty_ids": 0,
+    "origination_excess_duplicate_records": 0,
+    "performance_empty_id_records": 0,
+    "performance_empty_period_records": 0,
+    "performance_duplicate_nonempty_keys": 0,
+    "performance_excess_duplicate_records": 0,
+    "performance_distinct_nonempty_ids": 296816,
+    "performance_ids_without_origination": 0,
+    "performance_records_without_origination": 0,
+    "origination_ids_without_performance": 0
+  },
+  "scope": "Key completeness, uniqueness and cross-file linkage. Does not validate dates, field domains or target maturity. Duplicate keys are counted, not resolved."
+}
